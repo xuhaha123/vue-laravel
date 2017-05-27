@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
+class UserController extends Controller
+{
+    public function create(Request $request)
+    {
+        $data = $request->all();
+        $data['password'] = Hash::make($data['password']);
+        $user = User::create($data);
+        if ($user) {
+            //创建用户成功
+            return response()->json(['status' => 200, 'message' => '创建成功', 'data' => $user]);
+        } else {
+            return response()->json(['status' => 300, 'message' => '创建失败']);
+        }
+    }
+
+    public function select()
+    {
+        return response()->json(User::all());
+    }
+
+    public function delete($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            if ($user->delete()) {
+
+                return response()->json(['status' => 200, 'message' => '删除成功']);
+            } else {
+                return response()->json(['status' => 300, 'message' => '删除失败']);
+            }
+        } else {
+            return response()->json(['status' => 404, 'message' => '找不到这个用户']);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find($request->id);
+        $data = $request->all();
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        }
+        if ($user) {
+            if ($user->update($data)) {
+                return response()->json(['status' => 200, 'message' => '修改成功']);
+            } else {
+                return response()->json(['status' => 300, 'message' => '修改失败']);
+            }
+        } else {
+            return response()->json(['status' => 404, 'message' => '找不到这个用户']);
+        }
+    }
+}

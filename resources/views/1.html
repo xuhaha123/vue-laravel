@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue</title>
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<div id="app">
+    <table>
+        <tr><th>id</th><th>用户名</th><th>邮箱</th><td>操作</td></tr>
+        <tr v-for="(user,index) in users">
+            <td>{{user.id}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td><button @click="del(index,user.id)">删除</button></td>
+            <td><button @click="edit(user)">修改</button></td>
+        </tr>
+    </table>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            users:{},
+        },
+        mounted:function () {
+            axios.get('http://vue.dev/api/user')
+                .then(function (response) {
+                    this.users = response.data;
+                }.bind(this));
+        },
+        methods:{
+            del:function (index,id) {
+                axios.delete('http://vue.dev/api/user/'+id)
+                    .then(function (response) {
+                        this.users.splice(index,1);
+                    }.bind(this));
+            },
+            edit:function (user) {
+                console.log(user)
+            }
+        }
+
+    });
+</script>
+</html>
